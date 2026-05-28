@@ -204,11 +204,24 @@ function App() {
                     
                     <div style={{
                       width: '100%', aspectRatio: '3/4', borderRadius: '12px', marginBottom: '16px',
-                      background: 'linear-gradient(135deg, #e0c3fc 0%, #8ec5fc 100%)',
+                      overflow: 'hidden', maxHeight: '260px', backgroundColor: '#f4f4f5',
                       display: 'flex', alignItems: 'center', justifyContent: 'center',
-                      boxShadow: 'inset 0 0 20px rgba(255,255,255,0.5)', maxHeight: '260px'
                     }}>
-                      <span style={{ color: 'white', fontWeight: 'bold', textShadow: '0 2px 4px rgba(0,0,0,0.2)', fontSize: '14px' }}>Tampak Kartu</span>
+                      {product.image_url
+                        ? <img
+                            src={product.image_url}
+                            alt={product.name}
+                            style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
+                            onError={e => { e.target.style.display = 'none'; e.target.nextSibling.style.display = 'flex' }}
+                          />
+                        : null}
+                      <div style={{
+                        display: product.image_url ? 'none' : 'flex',
+                        width: '100%', height: '100%', alignItems: 'center', justifyContent: 'center',
+                        background: 'linear-gradient(135deg, #e0c3fc 0%, #8ec5fc 100%)',
+                      }}>
+                        <span style={{ color: 'white', fontWeight: 'bold', fontSize: '14px' }}>Tampak Kartu</span>
+                      </div>
                     </div>
                     
                     <div style={{ flex: 1 }}>
