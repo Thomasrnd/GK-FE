@@ -118,29 +118,71 @@ export default function Cart({ cart, isCartOpen, setIsCartOpen, removeFromCart, 
   const isShippingValid = formData.name.trim() && formData.phone.trim() && selectedDistrict && formData.address.trim();
 
   // WhatsApp order
-  const handleWhatsAppOrder = () => {
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [orderError, setOrderError] = useState('');
+
+  const handleWhatsAppOrder = async () => {
+    setIsSubmitting(true);
+    setOrderError('');
+
     const provinceName = provinces.find(p => p.id == selectedProvince)?.name || '';
-    const cityName = cities.find(c => c.id == selectedCity)?.name || '';
+    const cityName     = cities.find(c => c.id == selectedCity)?.name || '';
     const districtName = districts.find(d => d.id == selectedDistrict)?.name || '';
+    const grandTotal   = totalPrice + selectedCourier.cost;
 
-    const itemLines = cart.map(item =>
-      `• ${item.name} (${item.expansion_name}) x${item.qty} = Rp ${Number(item.price * item.qty).toLocaleString('id-ID')}`
-    ).join('\n');
+    try {
+      // 1. Simpan order ke database
+      const response = await fetch(`${API}/orders`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          customer_name:   formData.name,
+          phone_number:    formData.phone,
+          address:         formData.address,
+          province:        provinceName,
+          city:            cityName,
+          district:        districtName,
+          note:            formData.note || null,
+          courier_name:    selectedCourier.courier_name,
+          courier_service: selectedCourier.service,
+          shipping_cost:   selectedCourier.cost,
+          total_price:     grandTotal,
+          items: cart.map(item => ({
+            product_id:     item.id,
+            quantity:       item.qty,
+            price_at_time:  item.price
+          }))
+        })
+      });
 
-    const grandTotal = totalPrice + selectedCourier.cost;
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.error || 'Gagal menyimpan order');
 
-    const message = `Halo, saya ingin memesan kartu TCG:\n\n` +
-      `*Pesanan:*\n${itemLines}\n\n` +
-      `*Subtotal:* Rp ${Number(totalPrice).toLocaleString('id-ID')}\n` +
-      `*Ongkir (${selectedCourier.courier_name} - ${selectedCourier.service}):* Rp ${Number(selectedCourier.cost).toLocaleString('id-ID')}\n` +
-      `*Total:* Rp ${Number(grandTotal).toLocaleString('id-ID')}\n\n` +
-      `*Data Penerima:*\n` +
-      `Nama: ${formData.name}\n` +
-      `No HP: ${formData.phone}\n` +
-      `Alamat: ${formData.address}, Kec. ${districtName}, ${cityName}, ${provinceName}\n` +
-      (formData.note ? `Catatan: ${formData.note}` : '');
+      // 2. Buka WhatsApp dengan pesan lengkap + nomor order
+      const itemLines = cart.map(item =>
+        `• ${item.name} (${item.expansion_name}) x${item.qty} = Rp ${Number(item.price * item.qty).toLocaleString('id-ID')}`
+      ).join('\n');
 
-    window.open(`https://wa.me/?text=${encodeURIComponent(message)}`, '_blank');
+      const message =
+        `Halo, saya ingin memesan kartu TCG 🃏\n` +
+        `*Order ID: #${data.order_id}*\n\n` +
+        `*Pesanan:*\n${itemLines}\n\n` +
+        `*Subtotal:* Rp ${Number(totalPrice).toLocaleString('id-ID')}\n` +
+        `*Ongkir (${selectedCourier.courier_name} - ${selectedCourier.service}):* Rp ${Number(selectedCourier.cost).toLocaleString('id-ID')}\n` +
+        `*Total:* Rp ${Number(grandTotal).toLocaleString('id-ID')}\n\n` +
+        `*Data Penerima:*\n` +
+        `Nama: ${formData.name}\n` +
+        `No HP: ${formData.phone}\n` +
+        `Alamat: ${formData.address}, Kec. ${districtName}, ${cityName}, ${provinceName}\n` +
+        (formData.note ? `Catatan: ${formData.note}` : '');
+
+      window.open(`https://wa.me/?text=${encodeURIComponent(message)}`, '_blank');
+
+    } catch (err) {
+      setOrderError(err.message);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const groupedCart = cart.reduce((acc, item) => {
@@ -409,10 +451,19 @@ export default function Cart({ cart, isCartOpen, setIsCartOpen, removeFromCart, 
             </div>
 
             <div style={{ paddingTop: '16px', borderTop: '2px solid #f0f0f0', marginTop: 'auto', display: 'flex', flexDirection: 'column', gap: '10px' }}>
-              <button onClick={handleWhatsAppOrder} style={{ ...primaryBtnStyle, backgroundColor: '#25d366', fontSize: '15px', padding: '16px' }}>
-                📱 Pesan via WhatsApp
+              {orderError && (
+                <div style={{ backgroundColor: '#fff1f2', border: '1px solid #fecdd3', borderRadius: '8px', padding: '10px 14px', color: '#e11d48', fontSize: '13px' }}>
+                  {orderError}
+                </div>
+              )}
+              <button
+                onClick={handleWhatsAppOrder}
+                disabled={isSubmitting}
+                style={{ ...primaryBtnStyle, backgroundColor: '#25d366', fontSize: '15px', padding: '16px', opacity: isSubmitting ? 0.6 : 1 }}
+              >
+                {isSubmitting ? 'Menyimpan order...' : '📱 Pesan via WhatsApp'}
               </button>
-              <button onClick={handleBack} style={backBtnStyle}>← Ganti Kurir</button>
+              <button onClick={handleBack} disabled={isSubmitting} style={backBtnStyle}>← Ganti Kurir</button>
             </div>
           </>
         )}
