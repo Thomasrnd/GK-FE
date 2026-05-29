@@ -219,10 +219,10 @@ export default function Cart({ cart, isCartOpen, setIsCartOpen, removeFromCart, 
                     <div style={{
                       width: '22px', height: '22px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center',
                       fontSize: '11px', fontWeight: '700',
-                      backgroundColor: stepNumbers[step] >= stepNumbers[s] ? '#10b981' : '#e4e4e7',
+                      backgroundColor: stepNumbers[step] >= stepNumbers[s] ? '#1456b0' : '#e4e4e7',
                       color: stepNumbers[step] >= stepNumbers[s] ? 'white' : '#a1a1aa'
                     }}>{i + 1}</div>
-                    {i < 2 && <div style={{ width: '18px', height: '2px', backgroundColor: stepNumbers[step] > stepNumbers[s] ? '#10b981' : '#e4e4e7', borderRadius: '2px' }} />}
+                    {i < 2 && <div style={{ width: '18px', height: '2px', backgroundColor: stepNumbers[step] > stepNumbers[s] ? '#1456b0' : '#e4e4e7', borderRadius: '2px' }} />}
                   </div>
                 ))}
               </div>
@@ -249,7 +249,16 @@ export default function Cart({ cart, isCartOpen, setIsCartOpen, removeFromCart, 
                       <div style={{ backgroundColor: '#f4f4f5', padding: '5px 12px', borderRadius: '6px', fontSize: '11px', fontWeight: '700', color: '#52525b', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '10px' }}>{gameName}</div>
                       {groupedCart[gameName].map(item => (
                         <div key={item.id} style={{ display: 'flex', gap: '12px', paddingBottom: '14px', marginBottom: '14px', borderBottom: '1px dashed #f0f0f0' }}>
-                          <div style={{ width: '45px', height: '64px', background: 'linear-gradient(135deg, #e0c3fc, #8ec5fc)', borderRadius: '8px', flexShrink: 0 }} />
+                          <div style={{ width: '45px', height: '64px', borderRadius: '8px', flexShrink: 0, overflow: 'hidden', background: 'linear-gradient(135deg, #0d1c38, #16315e)' }}>
+                            {item.image_url && (
+                              <img
+                                src={item.image_url}
+                                alt={item.name}
+                                style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
+                                onError={e => { e.target.style.display = 'none' }}
+                              />
+                            )}
+                          </div>
                           <div style={{ flex: 1 }}>
                             <h4 style={{ margin: '0 0 2px 0', fontSize: '14px', fontWeight: '700', lineHeight: 1.3 }}>{item.name}</h4>
                             <p style={{ margin: '0 0 8px 0', fontSize: '11px', color: '#a1a1aa' }}>{item.expansion_name}</p>
@@ -259,7 +268,7 @@ export default function Cart({ cart, isCartOpen, setIsCartOpen, removeFromCart, 
                                 <span style={{ fontSize: '13px', fontWeight: '600', minWidth: '20px', textAlign: 'center' }}>{item.qty}</span>
                                 <button onClick={() => updateCartItemQty(item.id, item.qty + 1)} style={{ width: '26px', height: '26px', border: 'none', background: '#f4f4f5', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>+</button>
                               </div>
-                              <span style={{ fontWeight: '800', color: '#10b981', fontSize: '14px' }}>Rp {Number(item.price * item.qty).toLocaleString('id-ID')}</span>
+                              <span style={{ fontWeight: '800', color: '#1456b0', fontSize: '14px' }}>Rp {Number(item.price * item.qty).toLocaleString('id-ID')}</span>
                             </div>
                           </div>
                         </div>
@@ -275,9 +284,9 @@ export default function Cart({ cart, isCartOpen, setIsCartOpen, removeFromCart, 
                   </div>
                   <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '20px', fontSize: '20px', fontWeight: '800' }}>
                     <span>Total</span>
-                    <span style={{ color: '#10b981' }}>Rp {Number(totalPrice).toLocaleString('id-ID')}</span>
+                    <span style={{ color: '#1456b0' }}>Rp {Number(totalPrice).toLocaleString('id-ID')}</span>
                   </div>
-                  <button onClick={() => setStep('shipping')} style={{ width: '100%', padding: '15px', backgroundColor: '#10b981', color: 'white', border: 'none', borderRadius: '12px', cursor: 'pointer', fontWeight: '700', fontSize: '15px' }}>
+                  <button onClick={() => setStep('shipping')} style={{ width: '100%', padding: '15px', backgroundColor: '#1456b0', color: 'white', border: 'none', borderRadius: '12px', cursor: 'pointer', fontWeight: '700', fontSize: '15px' }}>
                     Lanjut ke Pengiriman →
                   </button>
                 </div>
@@ -388,14 +397,14 @@ export default function Cart({ cart, isCartOpen, setIsCartOpen, removeFromCart, 
                       backgroundColor: 'white', cursor: 'pointer', textAlign: 'left',
                       transition: 'all 0.15s ease'
                     }}
-                    onMouseEnter={e => e.currentTarget.style.borderColor = '#10b981'}
+                    onMouseEnter={e => e.currentTarget.style.borderColor = '#1456b0'}
                     onMouseLeave={e => e.currentTarget.style.borderColor = '#f0f0f0'}
                   >
                     <div>
                       <div style={{ fontWeight: '700', fontSize: '15px', textTransform: 'uppercase' }}>{c.courier_name}</div>
                       <div style={{ fontSize: '12px', color: '#71717a', marginTop: '2px' }}>{c.service} · {c.etd}</div>
                     </div>
-                    <div style={{ fontWeight: '800', color: '#10b981', fontSize: '16px', flexShrink: 0 }}>
+                    <div style={{ fontWeight: '800', color: '#1456b0', fontSize: '16px', flexShrink: 0 }}>
                       Rp {Number(c.cost).toLocaleString('id-ID')}
                     </div>
                   </button>
@@ -440,7 +449,7 @@ export default function Cart({ cart, isCartOpen, setIsCartOpen, removeFromCart, 
               <div style={{ backgroundColor: '#f0fdf4', border: '1px solid #bbf7d0', borderRadius: '12px', padding: '16px' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                   <span style={{ fontSize: '16px', fontWeight: '700' }}>Grand Total</span>
-                  <span style={{ fontSize: '22px', fontWeight: '900', color: '#10b981' }}>
+                  <span style={{ fontSize: '22px', fontWeight: '900', color: '#1456b0' }}>
                     Rp {Number(totalPrice + selectedCourier.cost).toLocaleString('id-ID')}
                   </span>
                 </div>
