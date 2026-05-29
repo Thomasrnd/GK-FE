@@ -93,14 +93,14 @@ function App() {
   const totalPrice = cart.reduce((s, i) => s + i.price * i.qty, 0)
 
   if (loading) return (
-    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100vh', flexDirection: 'column', gap: '12px', background: '#050a1a' }}>
+    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100vh', flexDirection: 'column', gap: '12px', background: '#f4f5f7' }}>
       <div style={{ fontSize: '22px', fontWeight: '900', letterSpacing: '-1px', background: 'linear-gradient(180deg, #7dd3fc, #1e6fd9)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>GK</div>
-      <div style={{ fontSize: '13px', color: '#3b5a85' }}>Memuat koleksi kartu...</div>
+      <div style={{ fontSize: '13px', color: '#8a93a3' }}>Memuat koleksi kartu...</div>
     </div>
   )
 
   if (error) return (
-    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100vh', color: '#fb7185', fontSize: '14px', background: '#050a1a' }}>
+    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100vh', color: '#dc2626', fontSize: '14px', background: '#f4f5f7' }}>
       {error}
     </div>
   )

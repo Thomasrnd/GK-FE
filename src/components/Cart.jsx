@@ -249,7 +249,7 @@ export default function Cart({ cart, isCartOpen, setIsCartOpen, removeFromCart, 
                       <div style={{ backgroundColor: '#f4f4f5', padding: '5px 12px', borderRadius: '6px', fontSize: '11px', fontWeight: '700', color: '#52525b', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '10px' }}>{gameName}</div>
                       {groupedCart[gameName].map(item => (
                         <div key={item.id} style={{ display: 'flex', gap: '12px', paddingBottom: '14px', marginBottom: '14px', borderBottom: '1px dashed #f0f0f0' }}>
-                          <div style={{ width: '45px', height: '64px', borderRadius: '8px', flexShrink: 0, overflow: 'hidden', background: 'linear-gradient(135deg, #0d1c38, #16315e)' }}>
+                          <div style={{ width: '45px', height: '64px', borderRadius: '8px', flexShrink: 0, overflow: 'hidden', background: 'linear-gradient(135deg, #dde6f2, #c5d6ec)' }}>
                             {item.image_url && (
                               <img
                                 src={item.image_url}
