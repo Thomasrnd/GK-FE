@@ -446,7 +446,7 @@ export default function Cart({ cart, isCartOpen, setIsCartOpen, removeFromCart, 
               </SummarySection>
 
               {/* Grand total */}
-              <div style={{ backgroundColor: '#f0fdf4', border: '1px solid #bbf7d0', borderRadius: '12px', padding: '16px' }}>
+              <div style={{ backgroundColor: '#eef4fc', border: '1px solid #c5dbf5', borderRadius: '12px', padding: '16px' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                   <span style={{ fontSize: '16px', fontWeight: '700' }}>Grand Total</span>
                   <span style={{ fontSize: '22px', fontWeight: '900', color: '#1456b0' }}>
@@ -468,7 +468,7 @@ export default function Cart({ cart, isCartOpen, setIsCartOpen, removeFromCart, 
               <button
                 onClick={handleWhatsAppOrder}
                 disabled={isSubmitting}
-                style={{ ...primaryBtnStyle, backgroundColor: '#25d366', fontSize: '15px', padding: '16px', opacity: isSubmitting ? 0.6 : 1 }}
+                style={{ ...primaryBtnStyle, fontSize: '15px', padding: '16px', opacity: isSubmitting ? 0.6 : 1 }}
               >
                 {isSubmitting ? 'Menyimpan order...' : '📱 Pesan via WhatsApp'}
               </button>
@@ -506,4 +506,4 @@ function SummaryRow({ label, value, bold }) {
 const labelStyle = { fontSize: '13px', fontWeight: '600', color: '#3f3f46', display: 'block', marginBottom: '6px' };
 const inputStyle = { width: '100%', padding: '10px 12px', borderRadius: '8px', border: '1px solid #e4e4e7', fontSize: '14px', outline: 'none', boxSizing: 'border-box', fontFamily: 'inherit' };
 const backBtnStyle = { flex: 1, padding: '13px', border: '1px solid #e4e4e7', borderRadius: '10px', cursor: 'pointer', fontWeight: '600', fontSize: '14px', backgroundColor: 'white', color: '#3f3f46' };
-const primaryBtnStyle = { flex: 2, padding: '13px', backgroundColor: '#18181b', color: 'white', border: 'none', borderRadius: '10px', cursor: 'pointer', fontWeight: '700', fontSize: '14px' };
+const primaryBtnStyle = { flex: 2, padding: '13px', backgroundColor: '#1456b0', color: 'white', border: 'none', borderRadius: '10px', cursor: 'pointer', fontWeight: '700', fontSize: '14px' };
