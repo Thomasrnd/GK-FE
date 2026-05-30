@@ -23,8 +23,10 @@ body {
   top: 0;
   z-index: 100;
 }
-.gk-brand { display: flex; align-items: center; }
-.gk-logo-full { height: 58px; width: auto; display: block; }
+.gk-brand { display: flex; align-items: center; gap: 11px; }
+.gk-logo-full { height: 48px; width: auto; display: block; }
+.gk-brand-name { font-size: 19px; font-weight: 900; letter-spacing: -0.5px; line-height: 1; color: #ffffff; }
+.gk-brand-accent { color: #d4af37; }
 
 .gk-cart-btn {
   display: flex; align-items: center; gap: 8px;

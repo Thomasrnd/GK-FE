@@ -121,6 +121,7 @@ function App() {
       <nav className="gk-nav">
         <div className="gk-brand">
           <img src="/logo-full.png" alt="Gudang Kartu" className="gk-logo-full" />
+          <span className="gk-brand-name">GUDANG <span className="gk-brand-accent">KARTU</span></span>
         </div>
         <button className="gk-cart-btn" onClick={() => setIsCartOpen(true)}>
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" aria-hidden="true">
