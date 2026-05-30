@@ -11,11 +11,11 @@ body {
 
 /* ── NAV ── */
 .gk-nav {
-  background: rgba(255,255,255,0.92);
+  background: #0a0e1a;
   backdrop-filter: blur(10px);
-  border-bottom: 1px solid #e6e9ef;
+  border-bottom: 1px solid #1a2236;
   padding: 0 32px;
-  height: 56px;
+  height: 72px;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -23,31 +23,21 @@ body {
   top: 0;
   z-index: 100;
 }
-.gk-brand { display: flex; align-items: baseline; gap: 8px; }
-.gk-brand-mono {
-  font-size: 18px;
-  font-weight: 900;
-  letter-spacing: -1px;
-  line-height: 1;
-  background: linear-gradient(180deg, #2b8eed, #1456b0);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-.gk-brand-tagline { font-size: 11px; font-weight: 600; color: #8a93a3; letter-spacing: 0.3px; }
+.gk-brand { display: flex; align-items: center; }
+.gk-logo-full { height: 58px; width: auto; display: block; }
 
 .gk-cart-btn {
   display: flex; align-items: center; gap: 8px;
-  background: linear-gradient(180deg, #2b8eed, #1456b0);
-  color: white; border: none; padding: 9px 18px;
-  border-radius: 8px; font-size: 13px; font-weight: 700;
+  background: linear-gradient(135deg, #d4af37, #b8932e);
+  color: #0a0e1a; border: none; padding: 9px 18px;
+  border-radius: 8px; font-size: 13px; font-weight: 800;
   cursor: pointer; font-family: inherit;
-  box-shadow: 0 4px 14px rgba(43, 142, 237, 0.3);
+  box-shadow: 0 4px 14px rgba(212, 175, 55, 0.3);
   transition: filter 0.15s;
 }
 .gk-cart-btn:hover { filter: brightness(1.05); }
 .gk-cart-badge {
-  background: white; color: #1456b0;
+  background: #0a0e1a; color: #d4af37;
   font-size: 10px; font-weight: 800;
   padding: 1px 7px; border-radius: 20px;
   min-width: 20px; text-align: center;
@@ -63,8 +53,8 @@ body {
 .gk-hero-grid {
   position: absolute; inset: 0; pointer-events: none;
   background-image:
-    linear-gradient(rgba(255,255,255,0.06) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255,255,255,0.06) 1px, transparent 1px);
+    linear-gradient(rgba(212,175,55,0.10) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(212,175,55,0.10) 1px, transparent 1px);
   background-size: 28px 28px;
 }
 .gk-hero-glow {
@@ -79,9 +69,9 @@ body {
 }
 .gk-hero-badge {
   display: inline-flex; align-items: center; gap: 5px;
-  background: rgba(255,255,255,0.15);
-  border: 1px solid rgba(255,255,255,0.3);
-  color: white; font-size: 10px; font-weight: 800;
+  background: rgba(212,175,55,0.18);
+  border: 1px solid #d4af37;
+  color: #f0d77b; font-size: 10px; font-weight: 800;
   padding: 4px 12px; border-radius: 6px; margin-bottom: 10px;
   letter-spacing: 1px; text-transform: uppercase;
   backdrop-filter: blur(4px);
@@ -90,7 +80,7 @@ body {
   font-size: 25px; font-weight: 900; letter-spacing: -0.5px;
   color: white; line-height: 1.15; margin-bottom: 6px;
 }
-.gk-hero h1 .accent { color: #b8e2ff; }
+.gk-hero h1 .accent { color: #f0d77b; }
 .gk-hero-sub { font-size: 12px; color: rgba(255,255,255,0.75); }
 
 /* ── GAME TABS ── */
@@ -110,10 +100,10 @@ body {
   transition: color 0.15s;
 }
 .gk-tab:hover { color: #16243a; }
-.gk-tab.active { color: #1456b0; }
+.gk-tab.active { color: #b8932e; }
 .gk-tab.active::after {
   content: ''; position: absolute; bottom: -1px; left: 0; right: 0;
-  height: 2px; background: linear-gradient(90deg, #2b8eed, #1456b0);
+  height: 2px; background: linear-gradient(90deg, #d4af37, #b8932e);
   border-radius: 2px;
 }
 
@@ -131,7 +121,7 @@ body {
   flex-shrink: 0;
   padding: 20px 16px 20px 32px;
   position: sticky;
-  top: 56px;
+  top: 72px;
 }
 .gk-sidebar-title {
   font-size: 11px; font-weight: 700; color: #8a93a3;
@@ -150,14 +140,14 @@ body {
 }
 .gk-exp-item:hover { background: #e9edf3; color: #16243a; }
 .gk-exp-item.active {
-  background: linear-gradient(180deg, #2b8eed, #1456b0);
-  color: white; box-shadow: 0 2px 12px rgba(43,142,237,0.3);
+  background: linear-gradient(135deg, #1456b0, #071a3d);
+  color: white; border-color: #d4af37; box-shadow: 0 2px 12px rgba(20,86,176,0.3);
 }
 .gk-exp-new-badge {
   flex-shrink: 0;
   font-size: 8px; font-weight: 800; letter-spacing: 0.5px;
   padding: 2px 6px; border-radius: 4px; text-transform: uppercase;
-  background: #2b8eed; color: white;
+  background: #d4af37; color: #0a0e1a;
 }
 .gk-exp-item.active .gk-exp-new-badge { background: rgba(255,255,255,0.25); }
 
@@ -217,11 +207,11 @@ body {
 
 .gk-add-btn {
   width: 30px; height: 30px; border-radius: 8px;
-  background: linear-gradient(180deg, #2b8eed, #1456b0);
-  border: none; color: white; font-size: 18px; cursor: pointer;
+  background: linear-gradient(135deg, #d4af37, #b8932e);
+  border: none; color: #0a0e1a; font-size: 18px; cursor: pointer;
   display: flex; align-items: center; justify-content: center;
-  flex-shrink: 0; font-weight: 300; line-height: 1;
-  box-shadow: 0 2px 10px rgba(43,142,237,0.3);
+  flex-shrink: 0; font-weight: 600; line-height: 1;
+  box-shadow: 0 2px 10px rgba(212,175,55,0.35);
   font-family: inherit; transition: transform 0.12s;
 }
 .gk-add-btn:hover { transform: scale(1.1); }
@@ -235,7 +225,7 @@ body {
   color: #16243a; line-height: 1; font-family: inherit; transition: background 0.1s;
   box-shadow: 0 1px 2px rgba(0,0,0,0.05);
 }
-.gk-qty-btn:hover { background: #2b8eed; color: white; }
+.gk-qty-btn:hover { background: #d4af37; color: #0a0e1a; }
 .gk-qty-num { font-size: 11px; font-weight: 800; min-width: 22px; text-align: center; color: #16243a; }
 
 .gk-out-btn {
