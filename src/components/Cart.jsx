@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 
-const API = 'http://localhost:3000/api';
+const API = import.meta.env.VITE_API_URL;
 
 // Berat per kartu dalam gram (asumsi)
 const WEIGHT_PER_CARD = 5;
