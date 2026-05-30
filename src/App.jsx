@@ -114,6 +114,7 @@ function App() {
         removeFromCart={removeFromCart}
         updateCartItemQty={updateCartItemQty}
         totalPrice={totalPrice}
+        clearCart={() => setCart([])}
       />
 
       {/* ── NAV ── */}

@@ -5,7 +5,7 @@ const API = 'http://localhost:3000/api';
 // Berat per kartu dalam gram (asumsi)
 const WEIGHT_PER_CARD = 5;
 
-export default function Cart({ cart, isCartOpen, setIsCartOpen, removeFromCart, updateCartItemQty, totalPrice }) {
+export default function Cart({ cart, isCartOpen, setIsCartOpen, removeFromCart, updateCartItemQty, totalPrice, clearCart }) {
   // Step: 'cart' | 'shipping' | 'courier' | 'summary'
   const [step, setStep] = useState('cart');
 
@@ -101,11 +101,16 @@ export default function Cart({ cart, isCartOpen, setIsCartOpen, removeFromCart, 
   };
 
   const handleCloseCart = () => {
+    const wasDone = step === 'done';
     setIsCartOpen(false);
     setTimeout(() => {
       setStep('cart');
       setSelectedCourier(null);
       setCouriers([]);
+      setOrderId(null);
+      setProofFile(null);
+      setOrderError('');
+      if (wasDone && clearCart) clearCart();
     }, 300);
   };
 
@@ -120,8 +125,11 @@ export default function Cart({ cart, isCartOpen, setIsCartOpen, removeFromCart, 
   // WhatsApp order
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [orderError, setOrderError] = useState('');
+  const [orderId, setOrderId] = useState(null);
+  const [bankAccounts, setBankAccounts] = useState([]);
+  const [proofFile, setProofFile] = useState(null);
 
-  const handleWhatsAppOrder = async () => {
+  const handleCreateOrder = async () => {
     setIsSubmitting(true);
     setOrderError('');
 
@@ -131,7 +139,6 @@ export default function Cart({ cart, isCartOpen, setIsCartOpen, removeFromCart, 
     const grandTotal   = totalPrice + selectedCourier.cost;
 
     try {
-      // 1. Simpan order ke database
       const response = await fetch(`${API}/orders`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -156,28 +163,32 @@ export default function Cart({ cart, isCartOpen, setIsCartOpen, removeFromCart, 
       });
 
       const data = await response.json();
-      if (!response.ok) throw new Error(data.error || 'Gagal menyimpan order');
+      if (!response.ok) throw new Error(data.error || 'Gagal membuat pesanan');
 
-      // 2. Buka WhatsApp dengan pesan lengkap + nomor order
-      const itemLines = cart.map(item =>
-        `• ${item.name} (${item.expansion_name}) x${item.qty} = Rp ${Number(item.price * item.qty).toLocaleString('id-ID')}`
-      ).join('\n');
+      setOrderId(data.order_id);
+      // Ambil daftar rekening aktif untuk ditampilkan
+      const banks = await fetch(`${API}/bank-accounts`).then(r => r.json()).catch(() => []);
+      setBankAccounts(banks);
+      setStep('payment');
 
-      const message =
-        `Halo, saya ingin memesan kartu TCG 🃏\n` +
-        `*Order ID: #${data.order_id}*\n\n` +
-        `*Pesanan:*\n${itemLines}\n\n` +
-        `*Subtotal:* Rp ${Number(totalPrice).toLocaleString('id-ID')}\n` +
-        `*Ongkir (${selectedCourier.courier_name} - ${selectedCourier.service}):* Rp ${Number(selectedCourier.cost).toLocaleString('id-ID')}\n` +
-        `*Total:* Rp ${Number(grandTotal).toLocaleString('id-ID')}\n\n` +
-        `*Data Penerima:*\n` +
-        `Nama: ${formData.name}\n` +
-        `No HP: ${formData.phone}\n` +
-        `Alamat: ${formData.address}, Kec. ${districtName}, ${cityName}, ${provinceName}\n` +
-        (formData.note ? `Catatan: ${formData.note}` : '');
+    } catch (err) {
+      setOrderError(err.message);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
-      window.open(`https://wa.me/?text=${encodeURIComponent(message)}`, '_blank');
-
+  const handleUploadProof = async () => {
+    if (!proofFile) { setOrderError('Pilih file bukti transfer dulu'); return; }
+    setIsSubmitting(true);
+    setOrderError('');
+    try {
+      const fd = new FormData();
+      fd.append('proof', proofFile);
+      const res = await fetch(`${API}/orders/${orderId}/payment-proof`, { method: 'POST', body: fd });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Gagal upload bukti');
+      setStep('done');
     } catch (err) {
       setOrderError(err.message);
     } finally {
@@ -195,7 +206,9 @@ export default function Cart({ cart, isCartOpen, setIsCartOpen, removeFromCart, 
     cart: 'Keranjang Belanja',
     shipping: 'Detail Pengiriman',
     courier: 'Pilih Kurir',
-    summary: 'Ringkasan Pesanan'
+    summary: 'Ringkasan Pesanan',
+    payment: 'Pembayaran',
+    done: 'Pesanan Diterima'
   };
 
   const stepNumbers = { cart: 1, shipping: 2, courier: 3, summary: 4 };
@@ -212,7 +225,7 @@ export default function Cart({ cart, isCartOpen, setIsCartOpen, removeFromCart, 
           <div>
             <h2 style={{ margin: 0, fontSize: '20px', fontWeight: '800' }}>{stepTitles[step]}</h2>
             {/* Step indicator */}
-            {step !== 'cart' && (
+            {(step === 'shipping' || step === 'courier' || step === 'summary') && (
               <div style={{ display: 'flex', gap: '6px', marginTop: '8px', alignItems: 'center' }}>
                 {['shipping', 'courier', 'summary'].map((s, i) => (
                   <div key={s} style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
@@ -466,15 +479,107 @@ export default function Cart({ cart, isCartOpen, setIsCartOpen, removeFromCart, 
                 </div>
               )}
               <button
-                onClick={handleWhatsAppOrder}
+                onClick={handleCreateOrder}
                 disabled={isSubmitting}
                 style={{ ...primaryBtnStyle, fontSize: '15px', padding: '16px', opacity: isSubmitting ? 0.6 : 1 }}
               >
-                {isSubmitting ? 'Menyimpan order...' : '📱 Pesan via WhatsApp'}
+                {isSubmitting ? 'Memproses...' : 'Buat Pesanan →'}
               </button>
               <button onClick={handleBack} disabled={isSubmitting} style={backBtnStyle}>← Ganti Kurir</button>
             </div>
           </>
+        )}
+
+        {/* ── STEP: PAYMENT ── */}
+        {step === 'payment' && (
+          <>
+            <div style={{ flex: 1, overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '16px' }}>
+              <div style={{ backgroundColor: '#eef4fc', border: '1px solid #c5dbf5', borderRadius: '12px', padding: '16px' }}>
+                <div style={{ fontSize: '13px', color: '#52525b' }}>Order ID</div>
+                <div style={{ fontSize: '18px', fontWeight: '800', color: '#1456b0' }}>#{orderId}</div>
+                <div style={{ marginTop: '8px', fontSize: '13px', color: '#52525b' }}>Total yang harus dibayar</div>
+                <div style={{ fontSize: '22px', fontWeight: '900', color: '#1456b0' }}>
+                  Rp {Number(totalPrice + selectedCourier.cost).toLocaleString('id-ID')}
+                </div>
+              </div>
+
+              <div>
+                <div style={{ fontSize: '13px', fontWeight: '700', marginBottom: '10px' }}>Transfer ke salah satu rekening:</div>
+                {bankAccounts.length === 0 ? (
+                  <div style={{ fontSize: '13px', color: '#a1a1aa' }}>Belum ada rekening tersedia. Hubungi penjual.</div>
+                ) : (
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                    {bankAccounts.map(bank => (
+                      <div key={bank.id} style={{ border: '1px solid #e4e4e7', borderRadius: '10px', padding: '14px' }}>
+                        <div style={{ fontSize: '15px', fontWeight: '800' }}>{bank.bank_name}</div>
+                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: '4px' }}>
+                          <span style={{ fontSize: '16px', fontFamily: 'monospace', fontWeight: '700', letterSpacing: '0.5px' }}>{bank.account_number}</span>
+                          <button
+                            onClick={() => navigator.clipboard?.writeText(bank.account_number)}
+                            style={{ fontSize: '11px', padding: '4px 10px', border: '1px solid #e4e4e7', borderRadius: '6px', background: 'white', cursor: 'pointer', color: '#1456b0', fontWeight: '600' }}
+                          >
+                            Salin
+                          </button>
+                        </div>
+                        <div style={{ fontSize: '12px', color: '#a1a1aa', marginTop: '2px' }}>a.n. {bank.account_holder}</div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              <div>
+                <div style={{ fontSize: '13px', fontWeight: '700', marginBottom: '8px' }}>Upload bukti transfer</div>
+                <label style={{
+                  display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+                  border: `2px dashed ${proofFile ? '#1456b0' : '#d8dde6'}`, borderRadius: '10px',
+                  padding: '24px', cursor: 'pointer', backgroundColor: '#fafafa', textAlign: 'center',
+                }}>
+                  <input type="file" accept="image/*" onChange={e => setProofFile(e.target.files[0])} style={{ display: 'none' }} />
+                  <div style={{ fontSize: '24px', marginBottom: '6px' }}>📎</div>
+                  <div style={{ fontSize: '13px', fontWeight: '600', color: proofFile ? '#1456b0' : '#52525b' }}>
+                    {proofFile ? proofFile.name : 'Klik untuk pilih foto bukti'}
+                  </div>
+                  <div style={{ fontSize: '11px', color: '#a1a1aa', marginTop: '2px' }}>JPG, PNG, max 5MB</div>
+                </label>
+              </div>
+
+              {orderError && (
+                <div style={{ backgroundColor: '#fff1f2', border: '1px solid #fecdd3', borderRadius: '8px', padding: '10px 14px', color: '#e11d48', fontSize: '13px' }}>
+                  {orderError}
+                </div>
+              )}
+            </div>
+
+            <div style={{ paddingTop: '16px', borderTop: '2px solid #f0f0f0', marginTop: 'auto' }}>
+              <button
+                onClick={handleUploadProof}
+                disabled={isSubmitting || !proofFile}
+                style={{ ...primaryBtnStyle, width: '100%', fontSize: '15px', padding: '16px', opacity: (isSubmitting || !proofFile) ? 0.5 : 1 }}
+              >
+                {isSubmitting ? 'Mengupload...' : 'Kirim Bukti Transfer'}
+              </button>
+            </div>
+          </>
+        )}
+
+        {/* ── STEP: DONE ── */}
+        {step === 'done' && (
+          <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', textAlign: 'center', padding: '40px 20px' }}>
+            <div style={{ width: '64px', height: '64px', borderRadius: '50%', backgroundColor: '#eef4fc', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '32px', marginBottom: '20px' }}>✓</div>
+            <h2 style={{ fontSize: '20px', fontWeight: '800', marginBottom: '8px' }}>Bukti Terkirim!</h2>
+            <p style={{ fontSize: '14px', color: '#52525b', lineHeight: 1.5, marginBottom: '6px' }}>
+              Pesanan <strong>#{orderId}</strong> sedang menunggu konfirmasi pembayaran dari penjual.
+            </p>
+            <p style={{ fontSize: '13px', color: '#a1a1aa', lineHeight: 1.5 }}>
+              Kami akan memproses pesananmu setelah pembayaran diverifikasi.
+            </p>
+            <div style={{ width: '100%' }}>
+              <button onClick={handleCloseCart} style={{ width: '100%', padding: '14px', marginTop: '28px', fontSize: '15px', backgroundColor: '#1456b0', color: 'white', border: 'none', borderRadius: '10px', cursor: 'pointer', fontWeight: '700' }}>
+                Selesai
+              </button>
+            </div>
+          </div>
         )}
 
       </div>
