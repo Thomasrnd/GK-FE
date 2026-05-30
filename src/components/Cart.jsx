@@ -108,6 +108,7 @@ export default function Cart({ cart, isCartOpen, setIsCartOpen, removeFromCart, 
       setSelectedCourier(null);
       setCouriers([]);
       setOrderId(null);
+      setOrderCode(null);
       setProofFile(null);
       setOrderError('');
       if (wasDone && clearCart) clearCart();
@@ -126,6 +127,7 @@ export default function Cart({ cart, isCartOpen, setIsCartOpen, removeFromCart, 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [orderError, setOrderError] = useState('');
   const [orderId, setOrderId] = useState(null);
+  const [orderCode, setOrderCode] = useState(null);
   const [bankAccounts, setBankAccounts] = useState([]);
   const [proofFile, setProofFile] = useState(null);
 
@@ -166,6 +168,7 @@ export default function Cart({ cart, isCartOpen, setIsCartOpen, removeFromCart, 
       if (!response.ok) throw new Error(data.error || 'Gagal membuat pesanan');
 
       setOrderId(data.order_id);
+      setOrderCode(data.order_code);
       // Ambil daftar rekening aktif untuk ditampilkan
       const banks = await fetch(`${API}/bank-accounts`).then(r => r.json()).catch(() => []);
       setBankAccounts(banks);
@@ -496,7 +499,7 @@ export default function Cart({ cart, isCartOpen, setIsCartOpen, removeFromCart, 
             <div style={{ flex: 1, overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '16px' }}>
               <div style={{ backgroundColor: '#eef4fc', border: '1px solid #c5dbf5', borderRadius: '12px', padding: '16px' }}>
                 <div style={{ fontSize: '13px', color: '#52525b' }}>Order ID</div>
-                <div style={{ fontSize: '18px', fontWeight: '800', color: '#1456b0' }}>#{orderId}</div>
+                <div style={{ fontSize: '18px', fontWeight: '800', color: '#1456b0' }}>{orderCode}</div>
                 <div style={{ marginTop: '8px', fontSize: '13px', color: '#52525b' }}>Total yang harus dibayar</div>
                 <div style={{ fontSize: '22px', fontWeight: '900', color: '#1456b0' }}>
                   Rp {Number(totalPrice + selectedCourier.cost).toLocaleString('id-ID')}
@@ -569,7 +572,7 @@ export default function Cart({ cart, isCartOpen, setIsCartOpen, removeFromCart, 
             <div style={{ width: '64px', height: '64px', borderRadius: '50%', backgroundColor: '#eef4fc', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '32px', marginBottom: '20px' }}>✓</div>
             <h2 style={{ fontSize: '20px', fontWeight: '800', marginBottom: '8px' }}>Bukti Terkirim!</h2>
             <p style={{ fontSize: '14px', color: '#52525b', lineHeight: 1.5, marginBottom: '6px' }}>
-              Pesanan <strong>#{orderId}</strong> sedang menunggu konfirmasi pembayaran dari penjual.
+              Pesanan <strong>{orderCode}</strong> sedang menunggu konfirmasi pembayaran dari penjual.
             </p>
             <p style={{ fontSize: '13px', color: '#a1a1aa', lineHeight: 1.5 }}>
               Kami akan memproses pesananmu setelah pembayaran diverifikasi.
